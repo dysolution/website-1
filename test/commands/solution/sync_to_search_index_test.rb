@@ -17,7 +17,7 @@ class Solution::SyncToSearchIndexTest < ActiveSupport::TestCase
       num_comments: 2,
       user: user,
       exercise: exercise
-    submission = create :submission, solution: solution
+    submission = create :submission, solution: solution, tests_status: :passed
     create :submission_file, submission: submission, content: "module LogLineParser"
     iteration = create :iteration, submission: submission
 
@@ -53,8 +53,8 @@ class Solution::SyncToSearchIndexTest < ActiveSupport::TestCase
         },
         "track" => { "id" => 11, "slug" => "fsharp", "title" => "F#" },
         "user" => { "id" => 7, "handle" => "jane" },
-        "published_iteration" => { "tests_passed" => false, "code" => ["module LogLineParser"] },
-        "latest_iteration" => { "tests_passed" => false, "code" => ["module LogLineParser"] }
+        "published_iteration" => { "tests_status" => "passed", "code" => ["module LogLineParser"] },
+        "latest_iteration" => { "tests_status" => "passed", "code" => ["module LogLineParser"] }
       }
     }
     assert_equal expected, doc.except("_version", "_seq_no", "_primary_term")
@@ -73,7 +73,7 @@ class Solution::SyncToSearchIndexTest < ActiveSupport::TestCase
       user: user,
       exercise: exercise,
       git_important_files_hash: 'different-hash' # Makes the solution out-of-date
-    submission = create :submission, solution: solution
+    submission = create :submission, solution: solution, tests_status: :failed
     create :submission_file, submission: submission, content: "module LogLineParser"
     iteration = create :iteration, submission: submission
     solution.update!(
@@ -108,8 +108,8 @@ class Solution::SyncToSearchIndexTest < ActiveSupport::TestCase
         },
         "track" => { "id" => 11, "slug" => "fsharp", "title" => "F#" },
         "user" => { "id" => 7, "handle" => "jane" },
-        "published_iteration" => { "tests_passed" => false, "code" => ["module LogLineParser"] },
-        "latest_iteration" => { "tests_passed" => false, "code" => ["module LogLineParser"] }
+        "published_iteration" => { "tests_status" => "failed", "code" => ["module LogLineParser"] },
+        "latest_iteration" => { "tests_status" => "failed", "code" => ["module LogLineParser"] }
       }
     }
     assert_equal expected, doc.except("_version", "_seq_no", "_primary_term")
@@ -162,8 +162,8 @@ class Solution::SyncToSearchIndexTest < ActiveSupport::TestCase
         },
         "track" => { "id" => 11, "slug" => "fsharp", "title" => "F#" },
         "user" => { "id" => 7, "handle" => "jane" },
-        "published_iteration" => { "tests_passed" => true, "code" => ["module LogLineParser"] },
-        "latest_iteration" => { "tests_passed" => true, "code" => ["module LogLineParser"] }
+        "published_iteration" => { "tests_status" => "passed", "code" => ["module LogLineParser"] },
+        "latest_iteration" => { "tests_status" => "passed", "code" => ["module LogLineParser"] }
       }
     }
     assert_equal expected, doc.except("_version", "_seq_no", "_primary_term")
@@ -222,8 +222,8 @@ class Solution::SyncToSearchIndexTest < ActiveSupport::TestCase
         },
         "track" => { "id" => 11, "slug" => "fsharp", "title" => "F#" },
         "user" => { "id" => 7, "handle" => "jane" },
-        "published_iteration" => { "tests_passed" => false, "code" => ["module LogLineParser"] },
-        "latest_iteration" => { "tests_passed" => true, "code" => ["module LogLineParser\n\nlet parse str = 2"] }
+        "published_iteration" => { "tests_status" => "failed", "code" => ["module LogLineParser"] },
+        "latest_iteration" => { "tests_status" => "passed", "code" => ["module LogLineParser\n\nlet parse str = 2"] }
       }
     }
     assert_equal expected, doc.except("_version", "_seq_no", "_primary_term")
@@ -283,7 +283,7 @@ class Solution::SyncToSearchIndexTest < ActiveSupport::TestCase
         "track" => { "id" => 11, "slug" => "fsharp", "title" => "F#" },
         "user" => { "id" => 7, "handle" => "jane" },
         "published_iteration" => nil,
-        "latest_iteration" => { "tests_passed" => true, "code" => ["module LogLineParser\n\nlet parse str = 2"] }
+        "latest_iteration" => { "tests_status" => "passed", "code" => ["module LogLineParser\n\nlet parse str = 2"] }
       }
     }
     assert_equal expected, doc.except("_version", "_seq_no", "_primary_term")
@@ -394,8 +394,8 @@ class Solution::SyncToSearchIndexTest < ActiveSupport::TestCase
         },
         "track" => { "id" => 11, "slug" => "fsharp", "title" => "F#" },
         "user" => { "id" => 7, "handle" => "jane" },
-        "published_iteration" => { "tests_passed" => false, "code" => ["module LogLineParser", "module Helper"] },
-        "latest_iteration" => { "tests_passed" => false, "code" => ["module LogLineParser", "module Helper"] }
+        "published_iteration" => { "tests_status" => "not_queued", "code" => ["module LogLineParser", "module Helper"] },
+        "latest_iteration" => { "tests_status" => "not_queued", "code" => ["module LogLineParser", "module Helper"] }
       }
     }
     assert_equal expected, doc.except("_version", "_seq_no", "_primary_term")
